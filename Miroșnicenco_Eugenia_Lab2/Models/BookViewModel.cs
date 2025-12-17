@@ -6,6 +6,7 @@
             public string Title { get; set; }
             public decimal Price { get; set; }
             public string FullName { get; set; }
+            public string GenreName { get; set; } 
         //public Author Author { get; set; }
         //public Genre Genre { get; set; }
 

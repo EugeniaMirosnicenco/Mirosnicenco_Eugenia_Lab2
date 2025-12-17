@@ -28,7 +28,11 @@ namespace Miroșnicenco_Eugenia_Lab2.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var books = from b in _context.Book
+            var books = _context.Book
+                .Include(b => b.Author)
+                .Include(b => b.Genre)
+                .AsQueryable();
+            /*var books = from b in _context.Book
                         join a in _context.Author on b.AuthorID equals a.ID
                         select new BookViewModel
                         {
@@ -36,7 +40,7 @@ namespace Miroșnicenco_Eugenia_Lab2.Controllers
                             Title = b.Title,
                             Price = b.Price,
                             FullName = a.FullName
-                        };
+                        }; */
             if (!String.IsNullOrEmpty(searchString))
             {
                 books = books.Where(s => s.Title.Contains(searchString));
@@ -48,10 +52,10 @@ namespace Miroșnicenco_Eugenia_Lab2.Controllers
                     books = books.OrderByDescending(b => b.Title);
                     break;
                 case "Author":
-                    books = books.OrderBy(b => b.FullName);
+                    books = books.OrderBy(b => b.Author.FirstName).ThenBy(b => b.Author.LastName);
                     break;
                 case "author_desc":
-                    books = books.OrderByDescending(b => b.FullName);
+                    books = books.OrderByDescending(b => b.Author.FirstName).ThenByDescending(b => b.Author.LastName);
                     break;
                 case "Price":
                     books = books.OrderBy(b => b.Price);
@@ -63,9 +67,19 @@ namespace Miroșnicenco_Eugenia_Lab2.Controllers
                     books = books.OrderBy(b => b.Title);
                     break;
             }
-            return View(await books.AsNoTracking().ToListAsync());
+
+            var booksVM = await books.Select(b => new BookViewModel
+            {
+                ID = b.ID,
+                Title = b.Title,
+                Price = b.Price,
+                FullName = b.Author.FirstName + " " + b.Author.LastName,
+                GenreName = b.Genre.Name
+            }).AsNoTracking().ToListAsync();
+            //return View(await books.AsNoTracking().ToListAsync());
             // var miroșnicenco_Eugenia_Lab2Context = _context.Book.Include(b => b.Genre).Include(b=>b.Author);
             //return View(await miroșnicenco_Eugenia_Lab2Context.ToListAsync());
+            return View(booksVM);
         }
 
         // GET: Books/Details/5

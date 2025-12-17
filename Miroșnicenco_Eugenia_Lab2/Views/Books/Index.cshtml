@@ -31,6 +31,7 @@
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["PriceSortParm"]">@Html.DisplayNameFor(model => model.Price)</a>
             </th>
+            <th>Genre</th>
             <th></th>
         </tr>
     </thead>
@@ -46,6 +47,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
+                <td>@Html.DisplayFor(modelItem => item.GenreName)</td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
