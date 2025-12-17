@@ -1,9 +1,20 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Miroșnicenco_Eugenia_Lab2.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<Miroșnicenco_Eugenia_Lab2Context>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Miroșnicenco_Eugenia_Lab2Context") ?? throw new InvalidOperationException("Connection string 'Miroșnicenco_Eugenia_Lab2Context' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+	var services = scope.ServiceProvider;
+	DbInitializer.Initialize(services);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -18,12 +29,12 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
+//app.MapStaticAssets();
 
 app.MapControllerRoute(
 	name: "default",
-	pattern: "{controller=Home}/{action=Index}/{id?}")
-	.WithStaticAssets();
+	pattern: "{controller=Home}/{action=Index}/{id?}");
+	/*.WithStaticAssets();*/
 
 
 app.Run();
